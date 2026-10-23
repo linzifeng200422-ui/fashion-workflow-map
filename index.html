@@ -1,0 +1,1615 @@
+<!doctype html>
+<html lang="zh-CN" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>服装影像流程 · 全部展开</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 16px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans:
+    -apple-system-body, ui-sans-serif, -apple-system, system-ui, "Segoe UI",
+    Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 8px);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  -webkit-font-smoothing: antialiased;
+  font-size: var(--font-size-base);
+  line-height: calc(var(--font-size-base) * 1.625);
+  font-weight: var(--font-weight-normal);
+}
+
+.cursor-interaction {
+  cursor: var(--cursor-interaction, pointer);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: var(--cursor-interaction, pointer);
+  text-decoration: none;
+  text-underline-offset: 2px;
+  font-weight: inherit;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+.table {
+  font-family: var(--font-sans);
+}
+
+h1 {
+  font-size: calc(var(--font-size-base) * 1.5);
+  line-height: 1.3333333333;
+}
+
+h2 {
+  font-size: calc(var(--font-size-base) * 1.25);
+  line-height: 1.4;
+}
+h3 {
+  font-size: calc(var(--font-size-base) * 1.125);
+  line-height: 1.5555555556;
+}
+h4 {
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+h5,
+h6 {
+  font-size: var(--font-size-base);
+  line-height: calc(var(--font-size-base) * 1.625);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+b,
+strong,
+th {
+  font-weight: 600;
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+pre,
+pre code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: calc(var(--font-size-base) * 0.875);
+  line-height: calc(var(--font-size-base) * 1.625);
+  font-family: var(--font-sans);
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+.table :is(th, td):not(:last-child) {
+  padding-inline-end: calc(var(--font-size-base) * 1.5);
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead :is(th, td) {
+  border-bottom-color: var(--border-strong, var(--input));
+  padding-block: calc(var(--font-size-base) / 2);
+  line-height: var(--font-size-base);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+.table tbody :is(th, td) {
+  padding-block: calc(var(--font-size-base) * 0.625);
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 8px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+.widget {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  box-shadow: 0 0 0 0.5px var(--border-strong, var(--border));
+  color: var(--foreground);
+  background: var(--background);
+}
+
+#widget > :not(.card, .widget, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  border: 1px solid var(--border);
+  corner-shape: var(--corner-shape);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--font-sans);
+  padding: 5px 12px;
+  border-color: color-mix(
+    in oklab,
+    light-dark(var(--primary-foreground), var(--foreground)) 5%,
+    transparent
+  );
+  border-radius: var(--radius-2xl);
+  color: light-dark(var(--primary-foreground), var(--foreground));
+  background: light-dark(var(--foreground), var(--popover));
+  box-shadow: 0 8px 18px rgb(15 23 42 / 20%);
+  letter-spacing: -0.15px;
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  color: color-mix(in srgb, var(--foreground) 40%, var(--muted-foreground));
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  font-family: var(--font-sans);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+}
+
+small,
+.text-small {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+/* Match inline alignment without overriding a containing flex or grid layout. */
+.btn,
+.nav-link,
+.form-control,
+.form-select,
+.form-range,
+.form-check {
+  vertical-align: middle;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  corner-shape: var(--corner-shape);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: inherit;
+  font-family: var(--font-sans);
+  height: fit-content;
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  padding-inline: var(--control-spacing, 12px);
+  border-color: transparent;
+  border-radius: var(--radius-full);
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+}
+
+.btn {
+  border-color: var(--border);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: var(--cursor-interaction, pointer);
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: light-dark(
+    color-mix(in srgb, var(--foreground) 5.5%, transparent),
+    color-mix(in srgb, var(--foreground) 8%, transparent)
+  );
+}
+
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.btn-primary {
+  border-color: var(--border);
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: border-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: border-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--muted-foreground);
+  background: light-dark(
+    color-mix(in srgb, var(--foreground) 5.5%, transparent),
+    color-mix(in srgb, var(--foreground) 8%, transparent)
+  );
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+/* Shared preview chrome; product styles stay inside each variant. */
+.viz-dotted-background {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 14%, transparent) 0.8px,
+    transparent 0.8px
+  );
+  background-position: center;
+  background-size: 16px 16px;
+}
+
+.viz-carousel {
+  position: relative;
+  min-width: 0;
+}
+
+.viz-carousel:has(> .viz-carousel-controls) {
+  min-height: calc(60px + var(--viz-carousel-picker-height, 0px));
+  padding-bottom: 60px;
+}
+
+.viz-carousel > [data-variant][hidden] {
+  display: none !important;
+}
+
+.viz-carousel > [data-variant] {
+  isolation: isolate;
+}
+
+.viz-carousel-controls {
+  --viz-carousel-hover: light-dark(
+    color-mix(in srgb, var(--foreground) 5.4%, transparent),
+    color-mix(in srgb, var(--foreground) 7.8%, transparent)
+  );
+  position: absolute;
+  z-index: 2;
+  bottom: 8px;
+  left: 50%;
+  display: flex;
+  width: max-content;
+  /* Leave room for the host's design-controls launcher at the trailing edge. */
+  max-width: calc(100% - 96px);
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans);
+  /* Match the settings dropdown chrome independently of the content font size. */
+  font-size: 13px;
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+/* Keep authored mockup button styles out of the shared carousel chrome. */
+.viz-carousel-controls button,
+.viz-carousel-picker > summary {
+  display: flex !important;
+  height: auto !important;
+  min-height: 30px;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+  padding: 0 6px !important;
+  -webkit-app-region: no-drag;
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: inherit !important;
+  background: transparent !important;
+  font: inherit !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.viz-carousel-controls > button,
+.viz-carousel-picker > summary {
+  position: relative;
+  isolation: isolate;
+}
+
+.viz-carousel-controls > button {
+  --icon-size: 16px;
+  width: 30px !important;
+  padding: 0 !important;
+}
+
+.viz-carousel-picker > summary {
+  padding-inline: 12px !important;
+}
+
+.viz-carousel-controls .viz-carousel-caret {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  margin: 0;
+  color: inherit;
+  transform: rotate(180deg);
+}
+
+.viz-carousel-controls > button > svg,
+.viz-carousel-controls .viz-carousel-caret,
+.viz-carousel-count {
+  opacity: 0.5;
+}
+
+.viz-carousel-controls > button::before,
+.viz-carousel-picker > summary::before {
+  position: absolute;
+  z-index: -1;
+  inset: 3px;
+  border-radius: 12px;
+  content: "";
+  pointer-events: none;
+}
+
+.viz-carousel-controls > button:hover::before,
+.viz-carousel-picker > summary:hover::before {
+  background: var(--viz-carousel-hover);
+}
+
+.viz-carousel-controls > button,
+.viz-carousel-controls [data-lucide],
+.viz-carousel-controls .lucide {
+  flex-shrink: 0;
+}
+
+.viz-carousel-picker {
+  min-width: 0;
+}
+
+.viz-carousel-picker > summary {
+  min-width: 0;
+  list-style: none;
+}
+
+.viz-carousel-picker > summary::-webkit-details-marker {
+  display: none;
+}
+
+.viz-carousel-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.viz-carousel-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viz-carousel-options {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 4px);
+  left: 0;
+  display: flex;
+  max-height: 240px;
+  flex-direction: column;
+  gap: 2px;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  box-shadow: 0 4px 12px light-dark(rgb(0 0 0 / 6%), rgb(0 0 0 / 25%));
+}
+
+.viz-carousel-options > button {
+  border-radius: max(0px, calc(var(--radius-lg) - 5px)) !important;
+  width: 100% !important;
+  min-height: 28px;
+  justify-content: flex-start !important;
+  padding: 4px 8px !important;
+  font-size: var(--font-size-small) !important;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.viz-carousel-options > [aria-current="true"],
+.viz-carousel-options > button:hover {
+  background: var(--viz-carousel-hover) !important;
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  padding-inline: calc(4px + var(--control-spacing, 12px) / 2);
+  border-color: var(--input);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--popover) 96%, transparent);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.4285714286;
+}
+.form-control:is(
+  [type="file"],
+  [type="date"],
+  [type="datetime-local"],
+  [type="month"],
+  [type="week"],
+  [type="color"]
+) {
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  line-height: 18px;
+}
+.form-control:is(
+  [type="date"],
+  [type="datetime-local"],
+  [type="month"],
+  [type="week"]
+) {
+  padding-inline: var(--control-spacing, 12px);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+  padding: 0;
+}
+
+.form-control[type="file"]::file-selector-button {
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+  min-height: calc(10px + 2 * var(--control-spacing, 12px));
+  padding-inline: var(--control-spacing, 12px);
+  margin-inline-end: var(--control-spacing, 12px);
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  resize: vertical;
+  min-height: 96px;
+  padding: 8px 10px;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: none;
+}
+.form-control:disabled {
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  opacity: 1;
+}
+.form-control[aria-invalid="true"] {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--red) 20%, transparent);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: fit-content;
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  margin: 0;
+  /* The secondary icon role is 14px at compact density and 16px at web density. */
+  --icon-size: calc(10px + var(--control-spacing, 12px) / 2);
+  /* Settings dropdowns retain a 12px inset and a 4px text-to-chevron gap. */
+  padding: 0 calc(16px + var(--icon-size)) 0 12px;
+  outline: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent calc(50% - 0.6px),
+      var(--muted-foreground) calc(50% - 0.6px) calc(50% + 0.6px),
+      transparent calc(50% + 0.6px)
+    ),
+    linear-gradient(
+      135deg,
+      transparent calc(50% - 0.6px),
+      var(--muted-foreground) calc(50% - 0.6px) calc(50% + 0.6px),
+      transparent calc(50% + 0.6px)
+    );
+  background-position:
+    calc(100% - 12px - var(--icon-size) / 2) 50%,
+    calc(100% - 12px - var(--icon-size) * 0.18) 50%;
+  background-repeat: no-repeat;
+  background-size: calc(var(--icon-size) * 0.32) calc(var(--icon-size) * 0.32);
+  cursor: var(--cursor-interaction, default);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+}
+
+.form-select option {
+  color: var(--popover-foreground);
+  background-color: var(--popover);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: light-dark(
+    color-mix(in srgb, var(--foreground) 5.5%, transparent),
+    color-mix(in srgb, var(--foreground) 8%, transparent)
+  );
+}
+
+.form-select:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+.form-select:disabled {
+  opacity: 0.4;
+}
+
+.form-check {
+  display: flex;
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  corner-shape: round;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  width: calc(10px + var(--control-spacing, 12px) / 2);
+  height: calc(10px + var(--control-spacing, 12px) / 2);
+  border-color: var(--border-strong, var(--input));
+  border-radius: calc(var(--radius-sm) / 2);
+  background-color: transparent;
+  color: var(--foreground);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:is(:checked, :indeterminate) {
+  border-color: var(--border-strong, var(--input));
+  background-color: color-mix(in srgb, var(--popover) 96%, transparent);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+  background-color: var(--foreground);
+}
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:indeterminate::before {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 65%;
+  height: 6.65%;
+  margin: auto;
+  border-radius: var(--radius-full);
+  background: var(--foreground);
+  mask: none;
+  content: "";
+}
+
+.form-check-input[type="radio"] {
+  border-radius: var(--radius-full);
+  width: 16px;
+  height: 16px;
+  border: 0;
+  box-shadow: inset 0 0 0 1px var(--input);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 0;
+  background: radial-gradient(
+    circle,
+    var(--primary-foreground) 0 3px,
+    var(--foreground) 3px
+  );
+  box-shadow: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:focus-visible {
+  border-color: var(--ring);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+.form-check:not(.form-switch) .form-check-input[type="radio"]:disabled,
+.form-check:not(.form-switch)
+  .form-check-input[type="radio"]:disabled
+  + .form-check-label {
+  opacity: 0.5;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+  border-color: #fff;
+  background: #fff;
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--blue);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+  outline: none;
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  accent-color: var(--primary);
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  outline: none;
+  border-radius: var(--radius-full);
+  color: var(--foreground);
+  background: transparent;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  background: var(--form-range-track, var(--border));
+  height: 2px;
+  border-radius: var(--radius-full);
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  margin-top: -9px;
+  border-color: transparent;
+  background: currentColor;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Outline the native track and thumb, preserving the larger input hit area. */
+.form-range:focus-visible::-webkit-slider-runnable-track {
+  outline: 2px auto Highlight;
+  outline-color: -webkit-focus-ring-color;
+}
+
+.form-range::-moz-range-track {
+  background: var(--form-range-track, var(--border));
+  height: 2px;
+  border-radius: var(--radius-full);
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  border-color: transparent;
+  background: currentColor;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid Highlight;
+  outline-offset: 2px;
+}
+
+.form-range:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--blue);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.viz-carousel-controls :is(button, summary):focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* Web recipes are the default, including on renderers without inline style queries. */
+@supports (border-radius: if(style(--corner-shape: round): 1px; else: 2px)) {
+  /* Match the host's proportional text-sm scale at every text preference. */
+  .tooltip,
+  .viz-badge,
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    font-size: if(
+      style(--corner-shape: round): round(
+          nearest,
+          calc(var(--font-size-base) * 14 / 16),
+          1px
+        );
+        else: round(nearest, calc(var(--font-size-base) * 13 / 14), 1px)
+    );
+  }
+
+  .btn,
+  .nav-link,
+  .form-select {
+    border-radius: if(
+      style(--corner-shape: round): var(--radius-full); else: var(--radius-lg)
+    );
+  }
+
+  .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+    border-radius: if(
+      style(--corner-shape: round): calc(var(--radius-sm) / 2);
+        else: calc(var(--radius-lg) * 0.4)
+    );
+  }
+
+  .tooltip {
+    font-weight: if(
+      style(--corner-shape: round): 600; else: var(--font-weight-normal)
+    );
+  }
+}
+
+@media (pointer: coarse) {
+  .viz-carousel:has(> .viz-carousel-controls) {
+    min-height: calc(76px + var(--viz-carousel-picker-height, 0px));
+    padding-bottom: 76px;
+  }
+
+  .btn,
+  .nav-link,
+  .viz-carousel-controls button,
+  .viz-carousel-picker > summary,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, calc(var(--font-size-base) * 14 / 16));
+    font-size: max(
+      16px,
+      round(nearest, calc(var(--font-size-base) * 14 / 16), 1px)
+    );
+  }
+  .form-control:is(
+    [type="file"],
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="week"],
+    [type="time"],
+    [type="color"]
+  ) {
+    height: 44px;
+    min-height: 44px;
+    font-size: max(16px, calc(var(--font-size-base) * 14 / 16));
+    font-size: max(
+      16px,
+      round(nearest, calc(var(--font-size-base) * 14 / 16), 1px)
+    );
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+<style>html>body{margin:0 auto;padding:24px;max-width:1280px}@media(max-width:600px){html>body{padding:16px}}</style></head>
+<body>
+<main id="fashion-expanded-1023">
+  <header>
+    <h1>服装影像流程 · 全部展开</h1>
+    <div class="text-small">14个方法模块 · 19条独立分支 · 每步输入、工具、提示词要点与验收</div>
+  </header>
+  <nav aria-label="方法目录" id="expanded-toc-1023"></nav>
+  <div id="expanded-methods-1023"></div>
+</main>
+<style>
+  #fashion-expanded-1023 {color:var(--foreground);background:transparent;}
+  #fashion-expanded-1023 header {padding-right:90px;margin-bottom:24px;}
+  #fashion-expanded-1023 nav {display:flex;flex-wrap:wrap;gap:10px 20px;padding:12px 0 24px;}
+  #fashion-expanded-1023 section {margin:28px 0 44px;scroll-margin-top:16px;}
+  #fashion-expanded-1023 h3 {margin-top:22px;}
+  #fashion-expanded-1023 figure {margin:12px 0 26px;}
+  #fashion-expanded-1023 svg {display:block;width:100%;}
+  #fashion-expanded-1023 svg text {font-family:inherit;font-size:var(--font-size-base);font-weight:400;fill:var(--foreground);}
+  #fashion-expanded-1023 svg .step-title {font-weight:500;}
+  @media print {
+    #fashion-expanded-1023 section {break-before:page;}
+    #fashion-expanded-1023 figure {break-inside:avoid;}
+  }
+</style>
+<script type="application/json" id="expanded-flow-data-1023">{"routes":[{"id":"candid-gallery","name":"图库提示词探索","chain":"按触发方式分流：普通方向／展示图库／单号扩展／组合／收敛","steps":[["选择方向或母图","Codex读图＋随包48母图库","普通启动给8个差异方向；明确要N条时按N。挑选模式展示六页；编号01–48定位实际图片。","只写词即可，不先要求生图或训练。"],["反推00基准词","Codex反推词","人物、整套穿搭、微事件与支撑、环境、相机、光色媒介。","不可见细节不猜；反推词不冒充原始生成词。"],["输出A–H同系变化","Codex受控扩展","A全身；B留姿态证据的局部；C单机位变量；D侧向；E重心；F已有道具；G过渡；H完成。","未要求换装时保持整套穿搭；不凭空新增道具。"],["组合或继续选中编号","Codex职责编排","人物在另一环境：分清人物卡和环境卡；脸＋环境＋穿搭组合：逐项限定借用内容。","身份已锁定时，母图不得换脸。"],["选定后收敛","Codex精修词","保留已选人物、穿搭、事件、构图与主摄影关系，停止继续随机分叉。","来源：08-31图文第7图完整Skill；这是提示词探索路线。"]]},{"id":"street-photo","name":"原街拍：身份先行","chain":"按衣选人 → 扩角度表情 → 身份就绪 → 底图 → 换装","steps":[["按服装定位选人","Soul 2.0（原教程标签）","脸型五官、发型、气质、真实肤质与自然表情。","已有合格人物可跳步；人物案例不写成全局默认。"],["补同人角度与表情","GPT IMAGEGEN（具体版本未知）","同一个人，只改变朝向与微表情；分别使用固定主图扩展。","原片未公开完整扩展词；独立锚点是工程整理。"],["身份就绪","普通参考或真实Soul ID","这是资产准备与绑定，不是靠一段提示词完成训练。","真实Soul ID需已就绪并实际绑定，普通参考按实标记。"],["生成与筛选街拍底图","Soul 2.0（原教程标签）","拍摄距离与景别 → 动作表情 → 街道与现场光 → 照片质感。","6–8米长焦、CCD是原例；按任务选相容风格。"],["替换指定服装","Codex编排图像编辑","只替换指定衣物，保留人物、动作、机位、场景与光线；先核外轮廓空间。","原片未公开底层换装后端。"],["检查并局修","当前图像编辑工具／按需PS","具体缺陷＋正确表现＋商品参考，修后回看全图。","核印花文字、扣饰、边缘、手脚；来源EP36。"]]},{"id":"campaign","name":"Campaign：商品视觉先行","chain":"服装定视觉 → 廓形占位 → 换装 → 按需统一身份","steps":[["由商品建立视觉方向","Codex商品分析＋Moodboard规划","颜色、廓形、材质决定场景、光色、气质与取景。","先决定商品如何被看见，不强制先训练人物。"],["生成服装空间匹配的底图","Soul 2.0（原例）底图生成","肩宽、衣长、体积、负空间、动作、现场光。","目标廓形与占位是否相容；不同时承诺零改背景又强塞大衣。"],["系列换装","Codex编排图像编辑；后端未公开","只改指定衣物；保留已选姿态、机位、场景与光色。","已锁定的身份继续保持；商品细节逐项核对。"],["条件：是否需要后置统一人物","身份迁移工具；型号未公开","仅在前期未锁定、又需要整组同人时统一脸与发型。","已有合格身份或接受多人时跳过。"],["商品一致性终检","商品参考＋Codex/人工对照","颜色、廓形、领口、门襟、材质、阴影与接缝。","来源：Campaign视频02:13／04:25及配套图文。"]]},{"id":"selfie-lookbook","name":"自拍Lookbook：基准测试与矩阵筛选","chain":"共同视觉 → 同套衣测试 → 候选矩阵 → 筛底稿 → 精确迁移","steps":[["提炼多套服装的共同语言","Codex服装与视觉分析","人物、服装、视觉系统三个插槽；确定背景、机位、灯光和整体质感。","自拍在此主要提供服装事实，遮挡处不猜。"],["同套基准服装测试模特","Soul 2.0（原例）模特基准测试","候选模特先穿同一套基准衣，比较比例、气质与衣服适配。","先验证代表性样本，再决定批量范围。"],["矩阵出候选、筛人筛底稿","Soul 2.0（原例）候选矩阵","统一摄影系统，形成可比较的标准底稿。","原例140张选20张只是规模，不是默认数量。"],["自拍商品精确迁移","Codex编排换装／实际编辑入口","保留底稿身份、构图和光线；还原服装印花位置、流苏、系带与垂坠。","不继承自拍手机、镜框和杂乱背景。"],["成组检查","商品与身份参考＋逐图核验","分别核身份、商品设计和统一摄影关系。","来源：自拍Lookbook教程＋配套底稿长词。"]]},{"id":"pose-lookbook","name":"88姿势Lookbook：固定源独立出图","chain":"按情绪筛姿势 → 固定四职责 → 独立生成N张 → 逐图核验","steps":[["复用已确认设置","已确认的设置记录","数量N、画幅、像素、格式、质量；区分4K预设、原生像素与上采样。","已知信息不重复询问；纯词任务不先要求账号。"],["检索并实际看姿势","本地查询脚本＋Codex看图","按情绪、景别、动作、表情筛选，排除条件优先。","P003B是detail；P001、P006、P068不能按印刷FULL当全身。"],["固定参考职责","固定身份/穿搭/场景/单pose","身份管脸；穿搭管整套衣鞋；场景管空间与光；pose只借动作、重心、头向和表情。","不借pose的脸、原衣服、黑背景或印刷标签。"],["列N-shot计划并独立出图","当前支持必要参考输入的生图工具","输出设置 → 身份 → 穿搭 → 场景与比例 → pose/表情 → 光线融合。","恰好N张，近景计入N；不递归替代身份锚点。"],["逐图核验与定向修复","商品参考＋图像编辑/检查","身份、商品、手脚、承重、景别、光线、实际像素。","可修当前图；两次修补不成报告，预算更紧时提前停。"]]},{"id":"korean-outfit","name":"韩女指定整套衣鞋迁移","chain":"衣鞋确认 → 身份/风格/底图分职 → 换装 → 鞋履单修","steps":[["衣服与鞋一起确认","Codex检查完整衣鞋参考","颜色、版型、面料、领口、搭配、鞋头与鞋型。","仅单品任务不扩大为整套。"],["三种职责分开","Soul ID／Moodboard／底图提示词","身份管脸发；Moodboard管氛围；底图词管动作、机位、透视与环境。","已有合格底图可直接复用。"],["批跑比较并选片","Soul 2.0（原例）候选底图","自然姿态、正确透视、清晰脸手鞋、兼容的服装空间。","这是筛选判断，提示词不能替代看图。"],["只替换衣服和鞋","Codex／ImageGen标签；具体版本未公开","保留脸、头发、姿势、双手、场景、机位和光线；本例不新增帽包。","按本次指定的配饰变化调整，不机械禁帽包。"],["逐级核验，必要时单修鞋","局部图像编辑＋商品鞋参考","只修不符鞋区，保持脚向、落地点、比例与接触影。","100%是查看倍率，不是准确率；来源EP50。"]]},{"id":"photo-language","name":"韩女／男生摄影关系与提示词","chain":"择一：韩女拍摄关系与光线 ／ 男生穿搭、动作与具体现场","steps":[["分清拍摄关系","他拍／前置自拍／对镜自拍","谁拍谁、相机相对人物的位置、取景与视线。","先明确关系，避免把设备风格词变成画面里多出一台相机。"],["韩女生活感语法","人物＋微动作＋环境","可见五官发妆、自然表情、注意力对象、日常动作；先写日光或窗光，再决定补闪。","手机、CCD、闪光按本例观感相容选择，不设全局禁令。"],["男生街拍语法","人物 → 穿搭 → 动作 → 现场 → 媒介","实际外套/领口/下摆关系，手部任务、支撑、目光，海风、瓷砖、荧光灯等可见现场。","不强制多层叠穿；手机观感可与直闪共存。"],["词图交叉检查","画面与原词对照","昼夜、光向、衣着、动作、景别相容；中文与英文一致。","已知首图夜间词与白天画面冲突，不能盲抄印刷词。"]]},{"id":"complex-garments","name":"复杂款：部件与整体体量分开诊断","chain":"识别关键结构 → 场景测试 → 商品对照 → 局错/体量丢失分支","steps":[["识别这件商品的关键结构","Codex读商品正侧面参考","按实际衣服提取肩袖、外拱、体积、支撑、胸饰或裤脚等关键特征。","不是所有商品都必须有固定三处结构。"],["按结构选择场景并测试","原例Soul 2.0＋Flash Editorial底图","服装与身体姿态、空间和现场光能否共同表达设计。","无改善且无新证据时停损，不照抄原例尝试次数。"],["换装后与商品逐项对照","商品参考＋迁移成图并排检查","轮廓、体积、肩袖、局部部件与垂坠分别检查。","画面好看不等于还原准确。"],["判断：局部部件错还是整体体量丢失","Codex诊断／按需局部编辑","局错：按参考定向修；整体体量丢失：复评输入、姿态和工具，或如实报告局限。","换底图只是条件选项，不能承诺恢复，也不编模型内部机理。"]]},{"id":"eyewear","name":"眼镜Campaign：组内母图同步","chain":"单品定造型 → 组内母图同步 → 单品迁移 → 五金 → 后期","steps":[["单品决定造型方向","Codex读眼镜商品图并定造型","框形、金属、铰链、鼻托、透光关系，以及与服装/气质的搭配。","原例组数和九宫格不是所有任务固定规模。"],["选片并确定组内标准母图","Soul 2.0（原例）选片；Codex/ImageGen组内同步","先统一同组发型、领口与配饰，保持已定构图。","母图用于组内造型同步，不是递归替代身份。"],["迁移眼镜单品","Codex编排眼镜迁移＋商品细节图","框形、材质、镜腿、佩戴位置与透光贴合。","放大核鼻托、铰链、镜腿，100%指查看倍率。"],["按需去脏和修肤","RunningHub/Klein去脏、Nano Banana肤质（原例标签）","皮肤词只修表面微纹理，保留脸、妆容、发型与眼镜。","去脏或修肤后重新核对五金，不能默认为单品仍准确。"],["统色与组图验收","Capture One（作者例）","色温、曝光、曲线与色相统一；仍保留商品差异事实。","调色是参数操作，不是人物生图提示词。"]]},{"id":"postprocess","name":"后期：去脏／微肤质／调色","chain":"保留原稿 → 核结构 → 按瑕疵分支处理 → 全图回查","steps":[["保留原稿，先判断问题","当前待修图＋原稿备份＋相关参考","先核商品结构和解剖；仅修肤质时当前图即可，不另索无关商品图。","款式错不靠加颗粒或去脏掩盖。"],["判断：真织纹还是生成碎纹","RunningHub/Klein（原例）；局部对照","保护真实面料织纹、暗花和针织结构，只处理确认的伪影。","去脏可能重绘；value=3不冒充通用强度或倍率。"],["判断：是否需要微肤质恢复","Nano Banana（原例标签，确切版本未知）","只重建皮肤表面的细微纹理与起伏，保持身份、妆容、眼镜、服装和背景。","不以全图噪点假装毛孔，不声称恢复全部缺失细节。"],["按需统色并全图回查","Capture One（原例）／必要局部图层恢复","核脸、眼镜五金、商品文字、衣料、边缘与光影；必要时局部恢复后重查。","不能把作者应用演示当成本次已跑通后台。"]]},{"id":"fashion-film","name":"服装短片：关键帧到分段动态","chain":"构图 → 人服一致 → 多景别静帧 → 动态词 → 预览补镜 → 剪辑","steps":[["确定视觉与资产职责","Soul 2.0静帧资产（原例）／现有合格参考","明确每张图管什么；已有合格参考可复用，不强制三视图。","09-22三职责与09-23五资产是两个不同示例。"],["先定构图，再统一人物和穿搭","Codex编排关键帧图像编辑","保持已选视线、机位和背景，统一脸发、围巾、服装、包和鞋。","不能把原静态教程全部步骤变成此路线必经。"],["补齐不同景别关键帧","静态图像生成或编辑工具","保持同人同服，分别准备裤装/包细节、半身、侧面行走与结束画面。","景别与数量按本次叙事，不固定复制案例。"],["编写分段动态词","Codex＋对应视频模型提示词规范","时间范围＋参考图职责＋人物动作＋运镜＋头发/衣摆/树影等次级运动。","明确拍什么、人怎么动、相机怎么动；图号按实际重编。"],["预览、补镜与停损","Seedance 2.5（屏显原例）／实际可用入口","先看动作、衔接和节奏；只补问题段，复杂关系无改善时简化。","时间码是创作目标，不是逐帧精确控制保证。"],["检查高清细节并剪辑","当前选定剪辑工具；原例HyperFrames/Remotion分别承担编辑/片尾","核身份、服装与动态形变；按实际听感处理环境声、衣料声、脚步及配乐。","片尾可选；作者画面标WORKFLOW REPLAY，未取得原工程。"]]},{"id":"live-motion","name":"Live／情绪微动态","chain":"静图首帧 → 保持项 → 连贯微动作 → 机位约束 → 逐段验收","steps":[["合格静图作为首帧","支持首帧输入的图生视频工具；原例Seedance 2.5","保持人物、脸发、衣服、比例、道具、背景、光影、裁切和照片质感。","保持项是目标，仍须看实际输出。"],["选择连贯动作或情绪微动","Codex编写街拍或情绪微动作词","街拍：视线、手位、重心与发丝惯性；特写：眼睑、呼吸、泪迹、下唇与下颌状态变化。","可以是连贯复合动作，不限一个关节。"],["补机位和次级运动约束","当前视频入口的相机/环境约束","相机稳定或受控微漂移；背景几何、窗光、道具响应与动作一致。","4秒、480P是原例；用户时长和当前入口能力优先。"],["生成后逐段核验","实际视频逐段检查／定向改词","查身份、服装、额外手脚、遮挡与后段形变；有问题定向改词或拆段。","5秒内较稳是作者经验，不是模型硬上限或已证成功率。"]]},{"id":"editorial-layout","name":"杂志排版：保护原照片","chain":"拆参考版式 → 保护照片 → 样张 → 整组变化与统一 → 文字后检","steps":[["分析参考的设计关系","Codex读参考版式与已有照片","字体层级、图片占比、文字位置、颜色、留白。","借设计逻辑，不照抄参考文案。"],["给排版与照片保护约束","Codex布局指令／当前布局工具","保持照片比例、方向和调色，不重新生成；文字不遮挡商品关键结构。","配色按本次方向，粉灰黑只是原例。"],["样张或已确认方向","当前布局工具的一页样张或既有方向","先验证文字与图幅关系；已有确认方向直接沿用。","不为流程重复索要确认。"],["展开整组并按需加字稿","当前布局工具；ImageGen仅按需生成独立手写字稿","变化图片大小、位置、留白和文字组合；统一字体、配色与间距。","特殊手写字可独立生成后叠加，不重绘原照片。"],["逐页检查文字和版式","实际成页的文字与版式检查","拼写、可读性、禁用新文字、遮挡与商品保护。","源照片烘焙的旧字另标事实，不冒称已清除；原例有禁词未被遵守。"]]},{"id":"showcase-boundary","name":"成片展示：只提取可见参考","chain":"判断资料性质 → 观察主题与镜头 → 记录作者声明 → 未知保留","steps":[["确认是教程还是成片展示","Codex读已有画面、文案与研究","只有成片且未给步骤/词时，不反推精确模型、接口或完整提示词。","6篇展示作品分别记录，不能伪造新教程。"],["提取可观察的视觉参考","画面主题／镜头／服装可见关系","记录人物状态、环境、光色、机位与商品展示方式，可用于新任务Moodboard。","可见效果不是原作者制作参数。"],["保留声明与证据边界","作者公开文案与未知项记录","来源声明按作者陈述标记；一次预设异常不改成所有任务禁令。","ASR与画面不能替代独立听验；未知精确管线如实说明。"]]}],"variants":{"candid-gallery":[{"id":"directions","name":"普通启动／简易模式","steps":[["先读实际图库与用户目标","Codex读图/写词 · 48母图＋已知人物/风格要求","从真实母图挑选差异明显的方向；默认8条，用户指定N时按N。","不先要求锁人、训练或实际生图。"],["逐条给完整方向词","Codex读图/写词 · 每条中文解析＋英文完整词","写明人物、整套穿搭、微事件、环境、机位与光色，并标来源编号。","到此即可交付；不自动再执行00、A–H或组合。"],["后续按用户新触发转路","Codex读图/写词 · 沿编号／组合／就用这个","选单号才进入00＋A–H；说就用这个则收敛。","不同触发方式是分支，不是全部必经。"]]},{"id":"gallery","name":"挑选模式／看模板","steps":[["按顺序展示六张母图拼版","Codex读图/写词 · 已随包图库","展示编号01–48及各自可见的摄影方向。","不要求用户重新上传随包已有图库。"],["说明可用选择方式","Codex读图/写词 · 单编号或组合语法","可以指定单号、沿编号继续，或人物在另一环境等组合。","本次只看模板时，展示即可；不强制生成提示词。"]]},{"id":"number","name":"单编号／沿编号继续","steps":[["精确定位并实际看图","Codex读图/写词 · 编号01–48 → 对应母图","核对所选人物状态、整套穿搭、环境、景别和主摄影关系。","不重新随机选8方向。"],["给00基准反推词","Codex读图/写词 · 由成图可见事实反推","人物、穿搭、微事件/支撑、环境、相机、光色媒介六模块。","不能把反推词称为原始生成词。"],["给A–H同系扩展","Codex读图/写词 · 固定父图关系，各条完整英文词","A全身；B留证据的局部；C单机位；D侧向；E重心；F已有道具；G过渡；H完成。","未要求换装不换整套穿搭，不自动执行编号组合。"],["用户选定时可收敛","Codex读图/写词 · 一条完整中英精修词","继承已选方向，停止分叉。","这是后续触发；本次只要00+A–H时到此交付。"]]},{"id":"combine","name":"编号组合请求","steps":[["分别看所用编号的实际图","Codex读图/写词 · 如31模特在36环境／脸1＋环境3＋穿搭8","逐张核人物、衣物、动作、光线和环境事实。","不能只凭数字虚构照片内容。"],["先分配借用职责","Codex读图/写词 · 按该组合语法限定内容","人物在另一环境：人物卡保留穿搭、姿态、机位和主摄影关系；环境卡只改场景。脸/环境/穿搭组合各按原规范分工。","已锁身份优先；不把另一图的脸或衣服混入错误角色。"],["兼容性检查后给完整中英词","Codex读图/写词 · 季节／鞋履／支撑／遮挡／色彩与摄影","冲突时做最小必要调整，说明每个编号贡献的模块。","组合分支直接交完整词，不强制先走00+A–H。"]]},{"id":"converge","name":"就用这个／停止扩展","steps":[["继承已经选定的方案","Codex读图/写词 · 当前人物、衣着、事件、场景与摄影关系","停止随机方向、A–H和新增组合。","已有身份与用户选择保持。"],["交一条精修长版","Codex读图/写词 · 语义对齐的完整中文＋英文","将已选事实完整写入，不要求用户自行拼固定段。","这是收敛输出，不重新启动选图流程。"]]}],"photo-language":[{"id":"korean","name":"韩女生活感：拍摄关系","steps":[["先分拍摄关系","Codex摄影词编排 · 朋友后置他拍／前置自拍／对镜自拍","谁拍谁、机位距离、景别、视线与镜面关系。","三种关系择一写清，不混成相机位置矛盾的画面。"],["人物、微事件与环境","Codex摄影词编排 · 实际可见人物和完整穿搭","五官发妆、注意力、自然动作、手部任务与具体生活空间。","性别、年龄、衣服与表情由本次目标决定。"],["匹配光线与媒介","Codex摄影词编排 · 日光／窗光 → 按需补闪","先保留环境亮度，再写主体补闪、肤感和手机/CCD观感。","设备风格词不等于多出实体相机，也不设全局禁令。"],["词图与语义核验","Codex摄影词编排 · 真实画面＋中英词","核昼夜、光向、穿搭、动作和景别相容。","已知夜间印刷词与白天画面冲突，不盲抄。"]]},{"id":"menswear","name":"男生街拍：穿搭与动作现场","steps":[["人物可见特征","Codex摄影词编排 · 脸型／发型／肤感／气质","用具体结构写人物，尊重已确定身份。","不把案例年龄与人种强设为默认。"],["实际衣着结构","Codex摄影词编排 · 目标穿搭","衣长、宽松度、领口、下摆、鞋饰；有叠穿才写内外层关系。","单层T恤也可成立，不为规则多加衣服。"],["手部、受力和视线联动","Codex摄影词编排 · 具体生活动作","每只手在做什么、身体如何支撑、目光关注哪里，形成真实微事件。","不从性别推定固定动作或表情。"],["具体现场氛围","Codex读取并描述可见现场","海风、瓷砖、荧光灯、建筑和环境光色写成具体事实，而不是只写抽象氛围。","不从成图反推未经公开的真实拍摄地点或相机参数。"],["摄影媒介与补光","Soul 2.0（原例）的手机/CCD观感词","按目标选择手机或CCD观感，并分别决定无闪、补闪或直闪；与现场光、人物和衣料相容。","手机观感与直闪可共存；核词图一致与商品可见度。"]]}]}}</script>
+<script>
+(() => {
+  const root=document.getElementById('fashion-expanded-1023');
+  const toc=document.getElementById('expanded-toc-1023');
+  const container=document.getElementById('expanded-methods-1023');
+  const data=JSON.parse(document.getElementById('expanded-flow-data-1023').textContent);
+  const ns='http://www.w3.org/2000/svg';
+  const canvas=document.createElement('canvas');
+  const context=canvas.getContext('2d');
+  const charts=[];
+  function svgEl(name,attrs,text){
+    const n=document.createElementNS(ns,name);
+    Object.entries(attrs||{}).forEach(([k,v])=>n.setAttribute(k,String(v)));
+    if(text!==undefined)n.textContent=text;
+    return n;
+  }
+  function wrap(text,width,font){
+    context.font=font;
+    let line='';const lines=[];
+    const chunks=text.match(/[A-Za-z0-9@_./–—+-]+|\s+|[^\x00-\x7F]|./gu)||[];
+    for(const chunk of chunks){
+      if(line && context.measureText(line+chunk).width>width){lines.push(line.trimEnd());line=chunk.trimStart();}
+      else line+=chunk;
+    }
+    if(line)lines.push(line.trimEnd());
+    return lines;
+  }
+  data.routes.forEach((route,index)=>{
+    const section=document.createElement('section');section.id=route.id;
+    const heading=document.createElement('h2');heading.textContent=`${index+1}. ${route.name}`;section.appendChild(heading);
+    const anchor=document.createElement('a');anchor.href=`#${route.id}`;anchor.textContent=`${index+1}. ${route.name}`;
+    anchor.addEventListener('click',event=>{event.preventDefault();section.scrollIntoView({behavior:'auto',block:'start'});});toc.appendChild(anchor);
+    const back=document.createElement('a');back.href='#';back.textContent='返回目录';back.className='text-small';
+    back.addEventListener('click',event=>{event.preventDefault();root.scrollIntoView({behavior:'auto',block:'start'});});section.appendChild(back);
+    const branches=data.variants[route.id] || [{id:route.id,name:'',steps:route.steps}];
+    branches.forEach((branch,bIndex)=>{
+      if(branch.name){const h=document.createElement('h3');h.textContent=`分支 ${bIndex+1}｜${branch.name}`;section.appendChild(h);}
+      const figure=document.createElement('figure');
+      const svg=svgEl('svg',{role:'img','aria-label':route.name+(branch.name?'：'+branch.name:'')});
+      figure.appendChild(svg);section.appendChild(figure);
+      charts.push({svg,steps:branch.steps,id:`flow-arrow-${index}-${bIndex}`});
+    });
+    container.appendChild(section);
+  });
+  function draw(chart){
+    const {svg,steps,id}=chart;
+    const width=Math.max(240,svg.parentElement.getBoundingClientRect().width||736);
+    const computed=getComputedStyle(root);
+    const base=parseFloat(computed.getPropertyValue('--font-size-base'))||parseFloat(computed.fontSize)||14;
+    const font=`${base}px ${computed.fontFamily}`,lineHeight=base*1.5;
+    const cols=width>=660?2:1,gapX=42,gapY=34,margin=8;
+    const boxWidth=(width-2*margin-gapX*(cols-1))/cols;
+    svg.replaceChildren(svgEl('title',{},svg.getAttribute('aria-label')),svgEl('desc',{},steps.map(s=>s.join('。')).join('；')));
+    const defs=svgEl('defs');
+    const marker=svgEl('marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:6,markerHeight:6,orient:'auto-start-reverse'});
+    marker.appendChild(svgEl('path',{d:'M0 1 L9 5 L0 9',fill:'none',stroke:'var(--muted-foreground)','stroke-width':1.4}));
+    defs.appendChild(marker);svg.appendChild(defs);
+    const blocks=steps.map((step,i)=>{
+      const lines=[];
+      wrap(`${i+1}. ${step[0]}`,boxWidth-28,`500 ${font}`).forEach(t=>lines.push({t,title:true}));
+      [`工具 / 输入：${step[1]}`,`提示词 / 操作要点：${step[2]}`,`验收 / 条件出口：${step[3]}`].forEach(part=>{
+        lines.push({gap:true});wrap(part,boxWidth-28,font).forEach(t=>lines.push({t}));
+      });
+      return {lines,height:lines.reduce((h,l)=>h+(l.gap?base*0.45:lineHeight),0)+28};
+    });
+    const positions=[];let y=8;
+    for(let start=0;start<blocks.length;start+=cols){
+      const row=Math.floor(start/cols),rowBlocks=blocks.slice(start,start+cols),rowHeight=Math.max(...rowBlocks.map(b=>b.height));
+      rowBlocks.forEach((block,j)=>{
+        const col=cols===2&&row%2===1?cols-1-j:j,x=margin+col*(boxWidth+gapX);
+        positions.push({x,y,width:boxWidth,height:rowHeight,row,col});
+        svg.appendChild(svgEl('rect',{x,y,width:boxWidth,height:rowHeight,rx:6,fill:'var(--muted)','fill-opacity':0.55,stroke:'var(--border)','stroke-width':1}));
+        let ty=y+16+base;
+        block.lines.forEach(line=>{
+          if(line.gap){ty+=base*0.45;return;}
+          svg.appendChild(svgEl('text',{x:x+14,y:ty,class:line.title?'step-title':''},line.t));ty+=lineHeight;
+        });
+      });
+      y+=rowHeight+gapY;
+    }
+    positions.forEach((now,i)=>{
+      if(!i)return;const before=positions[i-1];let d;
+      if(now.row===before.row){
+        const right=now.x>before.x;
+        d=`M ${right?before.x+before.width+4:before.x-4} ${before.y+before.height/2} L ${right?now.x-6:now.x+now.width+6} ${now.y+now.height/2}`;
+      }else d=`M ${before.x+before.width/2} ${before.y+before.height+4} L ${now.x+now.width/2} ${now.y-6}`;
+      svg.appendChild(svgEl('path',{d,fill:'none',stroke:'var(--muted-foreground)','stroke-width':1.2,'marker-end':`url(#${id})`}));
+    });
+    svg.setAttribute('viewBox',`0 0 ${width} ${y}`);svg.style.height=`${y}px`;
+  }
+  let previousWidth=0;
+  function render(){
+    const width=root.getBoundingClientRect().width;
+    if(width===previousWidth&&charts.every(c=>c.svg.hasAttribute('viewBox')))return;
+    previousWidth=width;charts.forEach(draw);
+  }
+  new ResizeObserver(render).observe(root);render();
+})();
+</script>
+
+</body>
+</html>
